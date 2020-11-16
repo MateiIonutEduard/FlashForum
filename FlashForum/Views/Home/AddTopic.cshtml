@@ -57,7 +57,9 @@
             async: true
         });
 
-        location.href = `/Home/AllTopics/?id=${parseInt(id)}`;
+        setTimeout(function () {
+            location.href = `/Home/AllTopics/?id=${parseInt(id)}`;
+        }, 1000);
     });
 
     function OpenFile() {

@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ForumModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Category">
+    <Key>
+      <PropertyRef Name="cat_id" />
+    </Key>
+    <Property Name="cat_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="cat_name" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="cat_description" Type="varchar(max)" Nullable="false" />
+    <Property Name="cat_date" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Post">
+    <Key>
+      <PropertyRef Name="post_id" />
+    </Key>
+    <Property Name="post_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="post_content" Type="varchar(max)" Nullable="false" />
+    <Property Name="post_date" Type="datetime" Nullable="false" />
+    <Property Name="post_topic" Type="int" Nullable="false" />
+    <Property Name="post_by" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="PostFile">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="file_name" Type="varchar(max)" Nullable="false" />
+    <Property Name="file_type" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="file_content" Type="varbinary(max)" Nullable="false" />
+    <Property Name="ref_id" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Profile">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="image_name" Type="varchar(max)" Nullable="false" />
+    <Property Name="image_type" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="image_content" Type="varbinary(max)" Nullable="false" />
+    <Property Name="user_id" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Topic">
+    <Key>
+      <PropertyRef Name="topic_id" />
+    </Key>
+    <Property Name="topic_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="topic_subject" Type="varchar(max)" Nullable="false" />
+    <Property Name="topic_date" Type="datetime" Nullable="false" />
+    <Property Name="status" Type="int" Nullable="false" />
+    <Property Name="topic_cat" Type="int" Nullable="false" />
+    <Property Name="topic_by" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="user_name" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="user_pass" Type="varchar(max)" Nullable="false" />
+    <Property Name="user_email" Type="varchar" MaxLength="80" Nullable="false" />
+    <Property Name="user_date" Type="datetime" Nullable="false" />
+    <Property Name="user_level" Type="bit" />
+  </EntityType>
+  <Association Name="FK_Post_By">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Post" Type="Self.Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="post_by" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Post_ID">
+    <End Role="Post" Type="Self.Post" Multiplicity="1" />
+    <End Role="PostFile" Type="Self.PostFile" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Post">
+        <PropertyRef Name="post_id" />
+      </Principal>
+      <Dependent Role="PostFile">
+        <PropertyRef Name="ref_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Post_Topic">
+    <End Role="Topic" Type="Self.Topic" Multiplicity="1" />
+    <End Role="Post" Type="Self.Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Topic">
+        <PropertyRef Name="topic_id" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="post_topic" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Profile_User_ID">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Profile" Type="Self.Profile" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Profile">
+        <PropertyRef Name="user_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Topic_By">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Topic" Type="Self.Topic" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Topic">
+        <PropertyRef Name="topic_by" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Topic_Cat">
+    <End Role="Category" Type="Self.Category" Multiplicity="1" />
+    <End Role="Topic" Type="Self.Topic" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Category">
+        <PropertyRef Name="cat_id" />
+      </Principal>
+      <Dependent Role="Topic">
+        <PropertyRef Name="topic_cat" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ForumModelStoreContainer">
+    <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="PostFile" EntityType="Self.PostFile" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Profile" EntityType="Self.Profile" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Topic" EntityType="Self.Topic" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Post_By" Association="Self.FK_Post_By">
+      <End Role="User" EntitySet="User" />
+      <End Role="Post" EntitySet="Post" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Post_ID" Association="Self.FK_Post_ID">
+      <End Role="Post" EntitySet="Post" />
+      <End Role="PostFile" EntitySet="PostFile" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Post_Topic" Association="Self.FK_Post_Topic">
+      <End Role="Topic" EntitySet="Topic" />
+      <End Role="Post" EntitySet="Post" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Profile_User_ID" Association="Self.FK_Profile_User_ID">
+      <End Role="User" EntitySet="User" />
+      <End Role="Profile" EntitySet="Profile" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Topic_By" Association="Self.FK_Topic_By">
+      <End Role="User" EntitySet="User" />
+      <End Role="Topic" EntitySet="Topic" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Topic_Cat" Association="Self.FK_Topic_Cat">
+      <End Role="Category" EntitySet="Category" />
+      <End Role="Topic" EntitySet="Topic" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

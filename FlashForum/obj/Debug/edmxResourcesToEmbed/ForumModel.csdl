@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ForumModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Category">
+    <Key>
+      <PropertyRef Name="cat_id" />
+    </Key>
+    <Property Name="cat_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="cat_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="cat_description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="Topics" Relationship="Self.FK_Topic_Cat" FromRole="Category" ToRole="Topic" />
+    <Property Name="cat_date" Type="DateTime" Precision="3" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Post">
+    <Key>
+      <PropertyRef Name="post_id" />
+    </Key>
+    <Property Name="post_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="post_content" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="post_date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="post_topic" Type="Int32" Nullable="false" />
+    <Property Name="post_by" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="User" Relationship="Self.FK_Post_By" FromRole="Post" ToRole="User" />
+    <NavigationProperty Name="PostFiles" Relationship="Self.FK_Post_ID" FromRole="Post" ToRole="PostFile" />
+    <NavigationProperty Name="Topic" Relationship="Self.FK_Post_Topic" FromRole="Post" ToRole="Topic" />
+  </EntityType>
+  <EntityType Name="PostFile">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="file_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="file_type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="file_content" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+    <Property Name="ref_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Post" Relationship="Self.FK_Post_ID" FromRole="PostFile" ToRole="Post" />
+  </EntityType>
+  <EntityType Name="Profile">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="image_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="image_type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="image_content" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+    <Property Name="user_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="User" Relationship="Self.FK_Profile_User_ID" FromRole="Profile" ToRole="User" />
+  </EntityType>
+  <EntityType Name="Topic">
+    <Key>
+      <PropertyRef Name="topic_id" />
+    </Key>
+    <Property Name="topic_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="topic_subject" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="topic_date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="topic_cat" Type="Int32" Nullable="false" />
+    <Property Name="topic_by" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Category" Relationship="Self.FK_Topic_Cat" FromRole="Topic" ToRole="Category" />
+    <NavigationProperty Name="Posts" Relationship="Self.FK_Post_Topic" FromRole="Topic" ToRole="Post" />
+    <NavigationProperty Name="User" Relationship="Self.FK_Topic_By" FromRole="Topic" ToRole="User" />
+    <Property Name="status" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="user_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="user_pass" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="user_email" Type="String" MaxLength="80" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="user_date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="user_level" Type="Boolean" />
+    <NavigationProperty Name="Posts" Relationship="Self.FK_Post_By" FromRole="User" ToRole="Post" />
+    <NavigationProperty Name="Profiles" Relationship="Self.FK_Profile_User_ID" FromRole="User" ToRole="Profile" />
+    <NavigationProperty Name="Topics" Relationship="Self.FK_Topic_By" FromRole="User" ToRole="Topic" />
+  </EntityType>
+  <Association Name="FK_Topic_Cat">
+    <End Role="Category" Type="Self.Category" Multiplicity="1" />
+    <End Role="Topic" Type="Self.Topic" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Category">
+        <PropertyRef Name="cat_id" />
+      </Principal>
+      <Dependent Role="Topic">
+        <PropertyRef Name="topic_cat" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Post_By">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Post" Type="Self.Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="post_by" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Post_ID">
+    <End Role="Post" Type="Self.Post" Multiplicity="1" />
+    <End Role="PostFile" Type="Self.PostFile" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Post">
+        <PropertyRef Name="post_id" />
+      </Principal>
+      <Dependent Role="PostFile">
+        <PropertyRef Name="ref_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Post_Topic">
+    <End Role="Topic" Type="Self.Topic" Multiplicity="1" />
+    <End Role="Post" Type="Self.Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Topic">
+        <PropertyRef Name="topic_id" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="post_topic" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Profile_User_ID">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Profile" Type="Self.Profile" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Profile">
+        <PropertyRef Name="user_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Topic_By">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Topic" Type="Self.Topic" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Topic">
+        <PropertyRef Name="topic_by" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ForumEntity" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Categories" EntityType="Self.Category" />
+    <EntitySet Name="Posts" EntityType="Self.Post" />
+    <EntitySet Name="PostFiles" EntityType="Self.PostFile" />
+    <EntitySet Name="Profiles" EntityType="Self.Profile" />
+    <EntitySet Name="Topics" EntityType="Self.Topic" />
+    <EntitySet Name="Users" EntityType="Self.User" />
+    <AssociationSet Name="FK_Topic_Cat" Association="Self.FK_Topic_Cat">
+      <End Role="Category" EntitySet="Categories" />
+      <End Role="Topic" EntitySet="Topics" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Post_By" Association="Self.FK_Post_By">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Post" EntitySet="Posts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Post_ID" Association="Self.FK_Post_ID">
+      <End Role="Post" EntitySet="Posts" />
+      <End Role="PostFile" EntitySet="PostFiles" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Post_Topic" Association="Self.FK_Post_Topic">
+      <End Role="Topic" EntitySet="Topics" />
+      <End Role="Post" EntitySet="Posts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Profile_User_ID" Association="Self.FK_Profile_User_ID">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Profile" EntitySet="Profiles" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Topic_By" Association="Self.FK_Topic_By">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Topic" EntitySet="Topics" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

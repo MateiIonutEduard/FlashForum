@@ -150,30 +150,33 @@ namespace FlashForum.Controllers
             {
                 // remove category first...
                 db.Categories.Remove(item);
-                await db.SaveChangesAsync();
 
                 // find topics
                 var topics = await db.Topics.Where(node => node.topic_cat == id.Value).ToListAsync();
 
-                topics.ForEach(async (node) =>
+                if (topics.Count > 0)
                 {
-                    var posts = await db.Posts.Where(post => post.post_topic == node.topic_id).ToListAsync();
-
-                    // delete the files corresponding to the posts
-                    posts.ForEach(async (post) =>
+                    topics.ForEach((node) =>
                     {
-                        var files = db.PostFiles.Where(file => file.ref_id == post.post_id).ToList();
-                        db.PostFiles.RemoveRange(files);
-                        await db.SaveChangesAsync();
+                        var posts = db.Posts.Where(post => post.post_topic == node.topic_id).ToList();
+                        if (posts.Count > 0)
+                        {
+                            // delete the files corresponding to the posts
+                            posts.ForEach((post) =>
+                                {
+                                    var files = db.PostFiles.Where(file => file.ref_id == post.post_id).ToList();
+                                    if (files.Count != 0) db.PostFiles.RemoveRange(files);
+                                });
+
+                            // drop the posts using topics id
+                            db.Posts.RemoveRange(posts);
+                        }
                     });
 
-                    // drop the posts using topics id
-                    db.Posts.RemoveRange(posts);
-                    await db.SaveChangesAsync();
-                });
+                    // finally, remove these topics
+                    db.Topics.RemoveRange(topics);
+                }
 
-                // finally, remove these topics
-                db.Topics.RemoveRange(topics);
                 await db.SaveChangesAsync();
 
                 // return success
@@ -390,14 +393,13 @@ namespace FlashForum.Controllers
                         // remove topic successfully...
                         var posts = await db.Posts.Where(node => node.post_topic == item.topic_id).ToListAsync();
 
-                        posts.ForEach(async (post) =>
+                        posts.ForEach((post) =>
                         {
-                            var files = await db.PostFiles.Where(node => node.ref_id == post.post_id).ToListAsync();
-                            db.PostFiles.RemoveRange(files);
-                            await db.SaveChangesAsync();
+                            var files = db.PostFiles.Where(node => node.ref_id == post.post_id).ToList();
+                            if (files.Count != 0) db.PostFiles.RemoveRange(files);
                         });
 
-                        db.Posts.RemoveRange(posts);
+                        if(posts.Count != 0) db.Posts.RemoveRange(posts);
                         db.Topics.Remove(item);
                         await db.SaveChangesAsync();
 

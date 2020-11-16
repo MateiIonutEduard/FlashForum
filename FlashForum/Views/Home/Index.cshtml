@@ -111,7 +111,9 @@
                 async: true
             });
 
-            location.reload(1000, true);
+            setTimeout(function () {
+                location.reload(true);
+            }, 1000);
         });
 
         $("#can").on("click", function () {

@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ForumModelStoreContainer" CdmEntityContainer="ForumEntity">
+    <EntitySetMapping Name="Categories">
+      <EntityTypeMapping TypeName="ForumModel.Category">
+        <MappingFragment StoreEntitySet="Category">
+          <ScalarProperty Name="cat_date" ColumnName="cat_date" />
+          <ScalarProperty Name="cat_id" ColumnName="cat_id" />
+          <ScalarProperty Name="cat_name" ColumnName="cat_name" />
+          <ScalarProperty Name="cat_description" ColumnName="cat_description" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Posts">
+      <EntityTypeMapping TypeName="ForumModel.Post">
+        <MappingFragment StoreEntitySet="Post">
+          <ScalarProperty Name="post_id" ColumnName="post_id" />
+          <ScalarProperty Name="post_content" ColumnName="post_content" />
+          <ScalarProperty Name="post_date" ColumnName="post_date" />
+          <ScalarProperty Name="post_topic" ColumnName="post_topic" />
+          <ScalarProperty Name="post_by" ColumnName="post_by" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PostFiles">
+      <EntityTypeMapping TypeName="ForumModel.PostFile">
+        <MappingFragment StoreEntitySet="PostFile">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="file_name" ColumnName="file_name" />
+          <ScalarProperty Name="file_type" ColumnName="file_type" />
+          <ScalarProperty Name="file_content" ColumnName="file_content" />
+          <ScalarProperty Name="ref_id" ColumnName="ref_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Profiles">
+      <EntityTypeMapping TypeName="ForumModel.Profile">
+        <MappingFragment StoreEntitySet="Profile">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="image_name" ColumnName="image_name" />
+          <ScalarProperty Name="image_type" ColumnName="image_type" />
+          <ScalarProperty Name="image_content" ColumnName="image_content" />
+          <ScalarProperty Name="user_id" ColumnName="user_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Topics">
+      <EntityTypeMapping TypeName="ForumModel.Topic">
+        <MappingFragment StoreEntitySet="Topic">
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="topic_id" ColumnName="topic_id" />
+          <ScalarProperty Name="topic_subject" ColumnName="topic_subject" />
+          <ScalarProperty Name="topic_date" ColumnName="topic_date" />
+          <ScalarProperty Name="topic_cat" ColumnName="topic_cat" />
+          <ScalarProperty Name="topic_by" ColumnName="topic_by" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="ForumModel.User">
+        <MappingFragment StoreEntitySet="User">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="user_name" ColumnName="user_name" />
+          <ScalarProperty Name="user_pass" ColumnName="user_pass" />
+          <ScalarProperty Name="user_email" ColumnName="user_email" />
+          <ScalarProperty Name="user_date" ColumnName="user_date" />
+          <ScalarProperty Name="user_level" ColumnName="user_level" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>
