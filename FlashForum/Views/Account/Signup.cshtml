@@ -1,0 +1,123 @@
+﻿@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Matei Ionut-Eduard">
+    <title>Sign Up</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/signup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .btn-link:hover {
+            color: steelblue;
+            cursor: pointer;
+        }
+
+        .btn btn-outline-info {
+            margin-bottom: 10px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .fa-file-image-o:hover {
+            cursor: pointer;
+            opacity: 0.5;
+        }
+    </style>
+    <script src="~/Scripts/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).on("click", "#admin", function () {
+            $("#check").click();
+        });
+
+        $(document).on("click", ".fa-file-image-o", function () {
+            $("#upload").click();
+        });
+
+        $(document).on("change", "#upload", function () {
+            var fileName = $("#upload").val().split("\\").pop();
+            $("#model").text(fileName);
+        });
+
+        $(document).ready(function () {
+            $(".form-signup").submit(function (e) {
+                e.preventDefault();
+                $(".text-danger").css('visibility', 'hidden');
+                var pass = $("#password").val();
+                var conf = $("#confirm").val();
+
+                if (pass !== conf)
+                    $(".text-danger").css('visibility', 'visible');
+                else {
+                    var fileUpload = $("#upload").get(0);
+                    var files = fileUpload.files;
+                    var data = new FormData();
+
+                    var data = new FormData();
+                    data.append("username", $("#name").val());
+                    data.append("password", $("#password").val());
+                    data.append("email", $("#email").val());
+                    data.append("level", false);
+                    data.append("file", $("#upload").get(0).files[0]);
+
+                    $.ajax({
+                        url: '/Account/Signup',
+                        data: data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        method: 'POST',
+                        async: true,
+                        success: function (data) {
+                            if (data.success) location.href = "/Home/Index";
+                            else location.href = "/Account/Login";
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body class="text-center">
+    <form class="form-signup" method="post" enctype="multipart/form-data">
+        <img class="mb-4" src="~/Images/wolf.jpg" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal"><b>Sign Up</b></h1>
+        <label for="inputText" class="sr-only">Username</label>
+        <input type="text" class="form-control" id="name" placeholder="Username" required autofocus>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+        <label for="confirmPassword" class="sr-only">Confirm Password</label>
+        <input type="password" id="confirm" name="conpass" class="form-control" placeholder="Confirm Password" required>
+        <p class="text-danger" style="visibility:hidden;">Fields do not contain the same password!</p>
+        <div class="checkbox mb-3">
+            <input type="checkbox" id="check" value="admin"> <span id="admin" class="btn-link">Are you admin?</span>
+        </div>
+
+        <label for="upload" class="btn btn-outline-info btn-sm">
+            <span class="fa fa-file-image-o" aria-hidden="true"></span>
+            <input type="file" id="upload" style="display:none">
+        </label>&nbsp;<p id="model" class="text-success">Select file...</p>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+        <a href="/Account/Login" class="btn btn-lg btn-dark btn-block">Back</a>
+        <p class="mt-5 mb-3 text-muted">&copy; FlashForum 2020</p>
+    </form>
+</body>
+</html>

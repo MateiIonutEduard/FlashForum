@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="space">
+</div>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <strong class="text-primary" style="margin-left: 5%;">Are you sure that you want<br> to delete this category?</strong>
+        <div class="btn-group-sm mr-sm-auto" style="margin-left: 25%; margin-top: 5%;">
+            <button class="btn btn-outline-danger btn-sm" id="del"><span class="fa fa-trash">&nbsp; Remove</span></button>&nbsp;&nbsp;
+            <button class="btn btn-outline-info btn-sm" id="can"><span class="fa fa-ban">&nbsp; Cancel</span></button>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#filter").append(`<option value="1">All Categories</option>`);
+        $("#filter").append(`<option value="2">Best activity...</option>`);
+        $("#filter").append(`<option value="3">Last created</option>`);
+
+        if ($("#navbardrop").length) {
+            $.ajax({
+                url: "/Account/ViewProfile",
+                type: "get",
+                cache: false,
+                success: function (data) {
+                    $("#navbardrop").append("<img src='/Account/Show' alt='My Profile' width='32' height='32'>&nbsp; " + data.username);
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='#'><span class='fa fa-user' aria-hidden='true'></span>&nbsp; My Profile</a>");
+
+                    if (data.admin)
+                        $(".dropdown-menu").append("<a class='dropdown-item' href='/Home/AddCategory'><span class='fa fa-plus' aria-hidden='true'></span>&nbsp; New Category</a>");
+
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='/Account/Logout'><span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out</a>");
+                },
+                async: true
+            });
+        }
+
+        var filter = $("#filter").val();
+        $("tbody").empty();
+
+        $.ajax({
+            url: '/Home/Categories/',
+            type: 'get',
+            cache: false,
+            data: {
+                'filter': parseInt(filter)
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var id = `<th scope="row">${i + 1}</th>`;
+                    var name = `<td>${data[i].name}</td>`;
+                    var content = `<td>${data[i].content}</td>`;
+                    var date = `<td>${data[i].date}</td>`;
+
+                    var view = `<a href='/Home/AllTopics/?id=${data[i].id}' title='View Topics' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>`;
+                    var doit = `<a onclick='RemoveAll(${data[i].id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
+
+                    if (data[i].action === false) doit = ``;
+                    var action = `<td>${view}&nbsp;${doit}</td>`;
+                    var node = `<tr>${id}${name}${content}${date}${action}</tr>`;
+                    $("tbody").append(node);
+                }
+            },
+            async: true
+        });
+    });
+
+    $(document).on("change", "#filter", function () {
+        var filter = $("#filter").val();
+        $("tbody").empty();
+
+        $.get(
+            '/Home/Categories/',
+            {
+                'filter': parseInt(filter)
+            },
+            function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var id = `<th scope="row">${i + 1}</th>`;
+                    var name = `<td>${data[i].name}</td>`;
+                    var content = `<td>${data[i].content}</td>`;
+                    var date = `<td>${data[i].date}</td>`;
+
+                    var view = `<a href='/Home/AllTopics/?id=${data[i].id}' title='View Topics' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>`;
+                    var doit = `<a onclick='RemoveAll(${data[i].id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
+
+                    var action = `<td>${view}&nbsp;${doit}</td>`;
+                    var node = `<tr>${id}${name}${content}${date}${action}</tr>`;
+                    $("tbody").append(node);
+                }
+            }
+        );
+    });
+
+    function RemoveAll(id) {
+        var modal = $("#myModal");
+        modal.css("display", "block");
+        var close = $(".close");
+
+        $("#del").on("click", function () {
+            $.ajax({
+                url: '/Home/RemoveCategory/',
+                type: 'delete',
+                cache: false,
+                data: {
+                    'id': parseInt(id)
+                },
+                async: true
+            });
+
+            location.reload(1000, true);
+        });
+
+        $("#can").on("click", function () {
+            close.click();
+        });
+
+        close.on("click", function () {
+            modal.css("display", "none");
+        });
+    }
+</script>
+<div class="container-fluid">
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Published</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--
+                There JQuery will dynamic load web content...
+            -->
+        </tbody>
+    </table><br>
+</div>

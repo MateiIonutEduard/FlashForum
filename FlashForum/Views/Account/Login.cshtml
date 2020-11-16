@@ -1,0 +1,76 @@
+﻿@{ 
+    Layout = null;
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Matei Ionut-Eduard">
+    <title>Sign In</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/signin.css" rel="stylesheet" />
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .text-danger {
+            padding-bottom: 30px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+    </style>
+
+    <script src="~/Scripts/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".form-signin").submit(function (e) {
+                e.preventDefault();
+                var form = {
+                    "email": $("#email").val(),
+                    "password": $("#password").val()
+                };
+
+                $.ajax({
+                    url: '/Account/Login',
+                    type: 'post',
+                    data: form,
+                    dataType: 'json',
+                    cache: false,
+                    success: function (data) {
+                        if (data.success)
+                            location.href = "/Home/Index";
+                        else {
+                            $(".text-danger").css("visibility", "visible");
+                        }
+                    },
+                    async: true
+                });
+            });
+        });
+    </script>
+</head>
+<body class="text-center">
+    <form class="form-signin" method="post">
+        <img class="mb-4" src="~/Images/wolf.jpg" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal"><b>Sign In</b></h1>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Email address" required autofocus><br>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="password" name ="password" class="form-control" placeholder="Password" required>
+        <a href="/Account/Recover" class="text-danger" style="visibility:hidden;">Did you forget your password? :))</a><br>
+        <button class="btn btn-lg btn-success btn-block" type="submit">Log in</button>
+        <a class="btn btn-lg btn-info btn-block" href="/Account/Signup">Sign up</a>
+        <p class="mt-5 mb-3 text-muted">&copy; FlashForum @DateTime.Now.Year</p>
+    </form>
+</body>
+</html>

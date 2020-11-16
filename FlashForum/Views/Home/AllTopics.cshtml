@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewBag.Title = "All Topics";
+}
+
+<div class="space">
+</div>
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <strong class="text-primary" style="margin-left: 5%;">Are you sure you want to delete this topic?</strong>
+        <div class="btn-group-sm mr-sm-auto" style="margin-left: 25%; margin-top: 5%;">
+            <button class="btn btn-outline-danger btn-sm" id="del"><span class="fa fa-trash">&nbsp; Remove</span></button>&nbsp;&nbsp;
+            <button class="btn btn-outline-info btn-sm" id="can"><span class="fa fa-ban">&nbsp; Cancel</span></button>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    function RemoveTopic(id) {
+        // show popup first...
+        var modal = $("#myModal");
+        modal.css("display", "block");
+        var close = $(".close");
+
+        $("#del").on("click", function () {
+            $.ajax({
+                url: '/Home/RemoveTopic',
+                type: 'delete',
+                data: {
+                    'id': parseInt(id)
+                },
+                cache: false,
+                success: function (data) {
+                    if (!data.success) alert(data.message);
+                    else location.reload(500, true);
+                },
+                async: true
+            });
+        });
+
+        $("#can").on("click", function () {
+            close.click();
+        });
+
+        close.on("click", function () {
+            modal.css("display", "none");
+        });
+    }
+
+    $(document).ready(function () {
+        $("#filter").append(`<option value="1">All Threads</option>`);
+        $("#filter").append(`<option value="2">Most Posts...</option>`);
+        $("#filter").append(`<option value="3">Active Topics</option>`);
+
+        var query = location.href;
+        var url = new URL(query);
+        var id = url.searchParams.get("id");
+        if (id === null) location.href = '/Home/Index';
+
+        if ($("#navbardrop").length) {
+            $.ajax({
+                url: "/Account/ViewProfile",
+                type: "get",
+                cache: false,
+                success: function (data) {
+                    $("#navbardrop").append("<img src='/Account/Show' alt='My Profile' width='32' height='32'>&nbsp; " + data.username);
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='#'><span class='fa fa-user' aria-hidden='true'></span>&nbsp; My Profile</a>");
+                    $(".dropdown-menu").append(`<a class='dropdown-item' href='/Home/AddTopic/?id=${id}'><span class='fa fa-plus' aria-hidden='true'></span>&nbsp; Create Topic...</a>`);
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='/Account/Logout'><span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out</a>");
+                },
+                async: true
+            });
+        }
+
+        var filter = $("#filter").val();
+        $("tbody").empty();
+
+        $.ajax({
+            url: '/Home/ViewTopics',
+            type: 'get',
+            cache: false,
+            data: {
+                'id': parseInt(id),
+                'filter': parseInt(filter)
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var top = data[i];
+
+                    var id = `<th scope="row">${i + 1}</th>`;
+                    var subject = `<td>${top.subject}</td>`;
+                    var state = ``;
+
+                    if (top.status == 1)
+                        state = `<span class="badge badge-primary">CREATED</span>`;
+                    else if (top.status == 2)
+                        state = `<span class="badge badge-success">RUNNING</span>`;
+                    else
+                        state = `<span class="badge badge-info">COMPLETED</span>`;
+
+                    var status = `<td>${state}</td>`;
+                    var date = `<td>${top.date}</td>`;
+                    var doit = '';
+                    
+                    if (top.action) doit = `<a onclick='RemoveTopic(${top.id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
+                    var action = `<td><a href='#' title='View Posts' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>&nbsp;${doit}</td>`;
+                    var node = `<tr>${id}${subject}${status}${date}${action}</tr>`;
+                    $("tbody").append(node);
+                }
+            },
+            async: true
+        });
+    });
+
+    $(document).on("change", "#filter", function () {
+        var filter = $("#filter").val();
+        $("tbody").empty();
+
+        var query = location.href;
+        var url = new URL(query);
+        var id = url.searchParams.get("id");
+        if (id === null) location.href = '/Home/Index';
+
+        $.ajax({
+            url: '/Home/ViewTopics',
+            type: 'get',
+            cache: false,
+            data: {
+                'id': parseInt(id),
+                'filter': parseInt(filter)
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var top = data[i];
+
+                    var id = `<th scope="row">${i + 1}</th>`;
+                    var subject = `<td>${top.subject}</td>`;
+                    var state = ``;
+
+                    if (top.status == 1)
+                        state = `<span class="badge badge-primary">CREATED</span>`;
+                    else if (top.status == 2)
+                        state = `<span class="badge badge-success">RUNNING</span>`;
+                    else
+                        state = `<span class="badge badge-info">COMPLETED</span>`;
+
+                    var status = `<td>${state}</td>`;
+                    var date = `<td>${top.date}</td>`;
+                    var doit = '';
+
+                    if (top.action) doit = `<a onclick='RemoveTopic(${top.id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
+                    var action = `<td><a href='#' title='View Posts' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>&nbsp;${doit}</td>`;
+                    var node = `<tr>${id}${subject}${status}${date}${action}</tr>`;
+                    $("tbody").append(node);
+                }
+            },
+            async: true
+        });
+    });
+</script>
+<div class="container-fluid">
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Status</th>
+                <th scope="col">Published</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--
+                Async load table data...
+            -->
+        </tbody>
+    </table><br>
+</div>

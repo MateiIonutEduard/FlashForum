@@ -1,0 +1,110 @@
+﻿
+@{
+    ViewBag.Title = "New Topic";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#filter").css("visibility", "hidden");
+
+        var query = location.href;
+        var url = new URL(query);
+
+        var id = url.searchParams.get("id");
+        if (id === null) location.href = '/Home/Index';
+
+        if ($("#navbardrop").length) {
+            $.ajax({
+                url: "/Account/ViewProfile",
+                type: "get",
+                cache: false,
+                success: function (data) {
+                    $("#navbardrop").append("<img src='/Account/Show' alt='My Profile' width='32' height='32'>&nbsp; " + data.username);
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='#'><span class='fa fa-user' aria-hidden='true'></span>&nbsp; My Profile</a>");
+                    $(".dropdown-menu").append(`<a class='dropdown-item' href='/Home/AddTopic/?id=${id}'><span class='fa fa-plus' aria-hidden='true'></span>&nbsp; Create Topic...</a>`);
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='/Account/Logout'><span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out</a>");
+                },
+                async: true
+            });
+        }
+    });
+
+    $(document).on("submit", "form", function (e) {
+        e.preventDefault();
+        var query = location.href;
+        var url = new URL(query);
+
+        var id = url.searchParams.get("id");
+        if (id === null) location.href = '/Home/Index';
+        $('[name=choose]').val(parseInt(id));
+
+        var table = new FormData();
+        table.append('id', parseInt(id));
+        table.append('subject', $('#name').val());
+        table.append('question', $('#body').val());
+        table.append('view', $("#view").get(0).files[0]);
+
+        $.ajax({
+            url: '/Home/AddTopic',
+            type: 'post',
+            data: table,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.success) history.back();
+                else $('.text-danger').css('visibility', 'visible');
+            },
+            async: true
+        });
+
+        location.href = `/Home/AllTopics/?id=${parseInt(id)}`;
+    });
+
+    function OpenFile() {
+        $("#view").click();
+    }
+</script>
+<div class="space">
+</div>
+<div class="wrapper">
+    <div class="container-fluid">
+        <center><h3 class="text-success">Create Topic</h3></center><br>
+        <div class="row">
+            <div class="col-md-12">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <select name="choose" class="form-control">
+                            @{
+                                var db = new ForumEntity();
+                                var list = db.Categories.ToList();
+
+                                foreach (var t in list)
+                                {
+                                    <option value="@t.cat_id">@t.cat_name</option>
+                                }
+                            }
+                        </select>
+                        <span class="help-block"></span><br>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="name" class="form-control" placeholder="Subject..." required>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="body" style="width: 95%;" placeholder="Question Message" class="form-control float-left" rows="1" cols="30"></textarea>
+                        &nbsp;<span onclick="OpenFile();" id="icon" style="padding-top: 2%;" class="fa fa-link text-primary"></span>
+                        <input type="file" id="view" />
+                    </div><br>
+                    <div class="form-group">
+                        <strong class="text-danger" style="visibility: hidden;">Topic can not be created!</strong>
+                    </div>
+                    <div class="buttons-group">
+                        <input type="submit" class="btn btn-primary" value="Post">
+                        <a onclick="history.back()" class='btn btn-info'>Back</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

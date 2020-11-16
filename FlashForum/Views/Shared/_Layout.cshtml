@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .navbar-nav > li {
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        .custom-select {
+            color: black;
+            background-color: lightblue;
+        }
+
+            .custom-select:hover {
+                opacity: 0.9;
+            }
+
+        .dropdown-item:hover {
+            color: white;
+            background-color: steelblue;
+        }
+
+        .wrapper {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .btn-primary {
+            width: 30%;
+            margin-left: 65px;
+        }
+
+        .btn-info {
+            width: 30%;
+            margin-left: 65px;
+        }
+
+        .space {
+            margin-top: 100px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+        }
+
+        .close {
+            color: #aaaaaa;
+            margin-left: 95%;
+            width: 10%;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+        }
+
+        #view {
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        #icon:hover {
+            opacity: 0.8;
+            font-size: 20px;
+        }
+    </style>
+    <script src="~/Scripts/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/Home/Index"><b class="text-light">FlashForum</b></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Home/Index">Home Page</a>
+            </li>
+            <li class="nav-item" id="data-filter">
+                <select class="custom-select" id="filter">
+                    <!--
+                        These filter options will appear differently along web pages.
+                    -->
+                </select>
+
+            </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+            @if (Request.Cookies["user"] != null)
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                    </a>
+                    <div class="dropdown-menu">
+                    </div>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <div class="container-sm">
+                        <a class="nav-link" href="/Account/Login">Log in</a>
+                        <b class="text-success"> or </b>
+                        <a class="nav-link" href="/Account/Signup">Sign up</a>
+                    </div>
+                </li>
+            }
+        </ul>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <center><h3><b>&copy; @DateTime.Now.Year - FlashForum</b></h3></center>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

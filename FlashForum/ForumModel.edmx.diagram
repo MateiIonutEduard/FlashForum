@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="0dc32e129dde40e9bc74a14ae53da4ca" Name="Diagram1">
+        <EntityTypeShape EntityType="ForumModel.Category" Width="1.5" PointX="3.75" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ForumModel.Post" Width="1.5" PointX="3" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="ForumModel.PostFile" Width="1.5" PointX="5.25" PointY="8.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ForumModel.Profile" Width="1.5" PointX="3" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ForumModel.Topic" Width="1.5" PointX="6" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="ForumModel.User" Width="1.5" PointX="0.75" PointY="4.25" IsExpanded="true" />
+        <AssociationConnector Association="ForumModel.FK_Topic_Cat" ManuallyRouted="false" />
+        <AssociationConnector Association="ForumModel.FK_Post_By" ManuallyRouted="false" />
+        <AssociationConnector Association="ForumModel.FK_Post_ID" ManuallyRouted="false" />
+        <AssociationConnector Association="ForumModel.FK_Post_Topic" ManuallyRouted="false" />
+        <AssociationConnector Association="ForumModel.FK_Profile_User_ID" ManuallyRouted="false" />
+        <AssociationConnector Association="ForumModel.FK_Topic_By" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
