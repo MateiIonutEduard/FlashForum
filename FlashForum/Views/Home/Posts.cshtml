@@ -124,19 +124,25 @@
                             }
                             else
                             {
-                                <span class="text-success text-sm-left">Vote Reply</span>
+                                <span class="text-success text-sm-left">Reply Message...</span>
                             }
                         </div>
                         <div class="col-4 float-sm-right">
-                            <i class="fa fa-thumbs-up text-info"></i>
-                            <i class="fa fa-thumbs-down text-danger"></i>
+                            @if (posts[i - 1].post_by == id)
+                            {
+                                <span class="fa fa-trash text-danger"></span>
+                            }
+                            else
+                            {
+                                <span class="fa fa-reply text-info" style="padding-top: 5%;"></span>
+                            }
                         </div>
                     </div>
                 </div>
             }
             else
             {
-                <div class="container darker rounded" style="width: 60%; border: 1px solid lightgray;">
+                <div class="container rounded darker" style="width: 60%; border: 1px solid lightgray;">
                     <br><img src="/Home/ViewProfile/?id=@posts[i - 1].post_by" width="32" height="32" class="rounded-circle float-sm-left" alt="@user.user_name" />
                     <strong>&nbsp; @user.user_name</strong> says:
                     <span class="float-sm-right">@posts[i - 1].post_date.ToString("MM/dd/yyyy HH:mm:ss")</span>
@@ -152,12 +158,18 @@
                             }
                             else
                             {
-                                <span class="text-success text-sm-left">Vote Reply</span>
+                                <span class="text-success text-sm-left">Reply Message...</span>
                             }
                         </div>
                         <div class="col-4 float-sm-right">
-                            <i class="fa fa-thumbs-up text-info"></i>
-                            <i class="fa fa-thumbs-down text-danger"></i>
+                            @if (posts[i - 1].post_by == id)
+                            {
+                                <span class="fa fa-trash text-danger"></span>
+                            }
+                            else
+                            {
+                                <span class="fa fa-reply text-info"></span>
+                            }
                         </div>
                     </div>
                 </div>

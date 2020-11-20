@@ -456,6 +456,7 @@ namespace FlashForum.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Something is wrong!");
         }
 
+        [HttpPost]
         public async Task<ActionResult> SendPost(int topic, string message, HttpPostedFileBase file)
         {
             if(Request.Cookies["user"] != null)
