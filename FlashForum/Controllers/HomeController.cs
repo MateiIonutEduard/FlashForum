@@ -508,6 +508,33 @@ namespace FlashForum.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Something is wrong!");
         }
 
+        [HttpDelete]
+        public async Task<ActionResult> RemovePost(int? id)
+        {
+            if(id != null)
+            {
+                var db = new ForumEntity();
+                var post = await db.Posts.Where(p => p.post_id == id.Value)
+                            .FirstOrDefaultAsync();
+
+                if(post != null)
+                {
+                    var files = await db.PostFiles.Where(f => f.ref_id == post.post_id)
+                        .ToListAsync();
+
+                    if (files.Count != 0)
+                        db.PostFiles.RemoveRange(files);
+
+                    db.Posts.Remove(post);
+                    await db.SaveChangesAsync();
+                }
+
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound, "Post has been not found!");
+            }
+            
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Select post!");
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

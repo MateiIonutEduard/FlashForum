@@ -75,8 +75,51 @@
             }, 1000);
         }
     }
+
+    function ScrollDown() {
+        $(document).scrollTop($(document).height());
+        $('#post').focus();
+    }
+
+    function RemovePost(id) {
+        var modal = $("#myModal");
+        modal.css("display", "block");
+        var close = $(".close");
+
+        $("#del").on("click", function () {
+            $.ajax({
+                url: '/Home/RemovePost',
+                type: 'delete',
+                cache: false,
+                data: {
+                    'id': parseInt(id)
+                }
+            });
+            setTimeout(function () {
+                location.reload(true);
+            }, 1000);
+        });
+
+        $("#can").on("click", function () {
+            close.click();
+        });
+
+        close.on("click", function () {
+            modal.css("display", "none");
+        });
+    }
 </script>
 <div class="space">
+</div>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <strong class="text-primary" style="margin-left: 5%;">You don't need this post anymore ?</strong>
+        <div class="btn-group-sm mr-sm-auto" style="margin-left: 25%; margin-top: 5%;">
+            <button class="btn btn-outline-danger btn-sm" id="del"><span class="fa fa-trash">&nbsp; Remove Post</span></button>&nbsp;&nbsp;
+            <button class="btn btn-outline-info btn-sm" id="can"><span class="fa fa-ban">&nbsp; Cancel</span></button>
+        </div>
+    </div>
 </div>
 @using FlashForum.Models;
 @{
@@ -87,6 +130,10 @@
         var posts = db.Posts.Where(node => node.post_topic == id).ToList();
         var files = new List<PostFile>();
         var users = new List<User>();
+
+        string email = (Request.Cookies["user"] != null) ? Request.Cookies["user"].Value : "";
+        var model = db.Users.Where(u => u.user_email == email).FirstOrDefault();
+        var uid = (model != null) ? model.Id : 0;
 
         posts.ForEach((post) =>
         {
@@ -128,13 +175,18 @@
                             }
                         </div>
                         <div class="col-4 float-sm-right">
-                            @if (posts[i - 1].post_by == id)
+                            @if (posts[i - 1].post_by == uid)
                             {
-                                <span class="fa fa-trash text-danger"></span>
+                                <a class="text-danger" data-toggle="tooltip" title="Delete Post">
+                                    <span class="fa fa-trash" onclick="RemovePost(@posts[i - 1].post_id)">
+                                    </span>
+                                </a>
                             }
                             else
                             {
-                                <span class="fa fa-reply text-info" style="padding-top: 5%;"></span>
+                                <a class="text-success" data-toggle="tooltip" title="Reply All">
+                                    <span class="fa fa-reply text-info" onclick="ScrollDown()"></span>
+                                </a>
                             }
                         </div>
                     </div>
@@ -162,13 +214,18 @@
                             }
                         </div>
                         <div class="col-4 float-sm-right">
-                            @if (posts[i - 1].post_by == id)
+                            @if (posts[i - 1].post_by == uid)
                             {
-                                <span class="fa fa-trash text-danger"></span>
+                                <a class="text-danger" data-toggle="tooltip" title="Delete Post">
+                                    <span class="fa fa-trash" onclick="RemovePost(@posts[i - 1].post_id)">
+                                    </span>
+                                </a>
                             }
                             else
                             {
-                                <span class="fa fa-reply text-info"></span>
+                                <a class="text-success" data-toggle="tooltip" title="Reply All">
+                                <span class="fa fa-reply text-info" onclick="ScrollDown()"></span>
+                                </a>
                             }
                         </div>
                     </div>
@@ -180,7 +237,7 @@
         <h3 class="text-info" style="padding-left: 20%;">Reply</h3>
         <form class="form-inline" method="post" enctype="multipart/form-data">
             <div class="form-group mb-2" style="padding-left: 20%;">
-                <textarea id="post" class="rounded" rows="3" cols="50" placeholder="Post Message..."></textarea>
+                <textarea id="post" class="form-control rounded" rows="3" cols="50" placeholder="Post Message..."></textarea>
             </div>
             <div class="form-group mx-sm-3 mb-2">
                 <a class="text-info" onclick="OpenFile()">
