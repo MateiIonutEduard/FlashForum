@@ -24,10 +24,17 @@ namespace FlashForum.Controllers
         public async Task<ActionResult> Show()
         {
             var db = new ForumEntity();
-            var cookie = Request.Cookies["user"];
-            var user = await db.Users.Where(u => u.user_email == cookie.Value).FirstOrDefaultAsync();
-            var profile = await db.Profiles.Where(p => p.user_id == user.Id).FirstOrDefaultAsync();
-            return File(profile.image_content, profile.image_type);
+            var email = (Request.Cookies["user"] != null) ? Request.Cookies["user"].Value : "";
+            var user = await db.Users.Where(u => u.user_email == email).FirstOrDefaultAsync();
+
+            if (user != null)
+            {
+                var profile = await db.Profiles.Where(p => p.user_id == user.Id).FirstOrDefaultAsync();
+                return File(profile.image_content, profile.image_type);
+            }
+
+            byte[] data = System.IO.File.ReadAllBytes(@"/Images/sys.png");
+            return File(data, "image/png");
         }
 
         public async Task<ActionResult> ViewProfile()

@@ -211,6 +211,7 @@
     </Content>
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\sys.png" />
     <Content Include="Images\wolf.jpg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
