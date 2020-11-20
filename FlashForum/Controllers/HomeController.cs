@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using FlashForum.Models;
+using System.Net;
 
 namespace FlashForum.Controllers
 {
@@ -427,6 +428,83 @@ namespace FlashForum.Controllers
                 table.Add("success", false);
                 return Json(table, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        public ActionResult Posts()
+        {
+            return View();
+        }
+
+        public async Task<ActionResult> ViewProfile(int id)
+        {
+            var db = new ForumEntity();
+            var profile = await db.Profiles.Where(node => node.user_id == id).FirstOrDefaultAsync();
+
+            if (profile != null) return File(profile.image_content, profile.image_type, profile.image_name);
+            else return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "User doesn't exists!");
+        }
+
+        public async Task<ActionResult> DownloadFile(int? id)
+        {
+            if (Request.Cookies["user"] != null && id != null)
+            {
+                var db = new ForumEntity();
+                var file = await db.PostFiles.Where(node => node.Id == id.Value).FirstOrDefaultAsync();
+                return File(file.file_content, file.file_type, file.file_name);
+            }
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Something is wrong!");
+        }
+
+        public async Task<ActionResult> SendPost(int topic, string message, HttpPostedFileBase file)
+        {
+            if(Request.Cookies["user"] != null)
+            {
+                var db = new ForumEntity();
+                string email = Request.Cookies["user"].Value;
+
+                var user = await db.Users.Where(u => u.user_email == email)
+                            .FirstOrDefaultAsync();
+
+                if (user != null)
+                {
+                    var post = new Post
+                    {
+                        post_content = message,
+                        post_date = DateTime.Now,
+                        post_topic = topic,
+                        post_by = user.Id
+                    };
+
+                    db.Posts.Add(post);
+                    await db.SaveChangesAsync();
+
+                    var self = await db.Posts.Where(m => m.post_content == message)
+                               .FirstOrDefaultAsync();
+
+                    if (file != null)
+                    {
+                        var ms = new MemoryStream();
+                        await file.InputStream.CopyToAsync(ms);
+
+                        var data = new PostFile
+                        {
+                            file_name = file.FileName,
+                            file_content = ms.ToArray(),
+                            file_type = file.ContentType,
+                            ref_id = self.post_id
+                        };
+
+                        db.PostFiles.Add(data);
+                        await db.SaveChangesAsync();
+                        return new HttpStatusCodeResult(HttpStatusCode.Created);
+                    }
+                }
+                
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "You must to login!");
+            }
+            
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Something is wrong!");
         }
 
         public ActionResult About()

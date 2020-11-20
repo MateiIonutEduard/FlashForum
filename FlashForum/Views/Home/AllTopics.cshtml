@@ -106,7 +106,7 @@
                     var doit = '';
                     
                     if (top.action) doit = `<a onclick='RemoveTopic(${top.id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
-                    var action = `<td><a href='#' title='View Posts' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>&nbsp;${doit}</td>`;
+                    var action = `<td><a href='/Home/Posts/?id=${top.id}' title='View Posts' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>&nbsp;${doit}</td>`;
                     var node = `<tr>${id}${subject}${status}${date}${action}</tr>`;
                     $("tbody").append(node);
                 }
@@ -152,7 +152,7 @@
                     var doit = '';
 
                     if (top.action) doit = `<a onclick='RemoveTopic(${top.id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
-                    var action = `<td><a href='#' title='View Posts' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>&nbsp;${doit}</td>`;
+                    var action = `<td><a href='/Home/Posts/?id=${top.id}' title='View Posts' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>&nbsp;${doit}</td>`;
                     var node = `<tr>${id}${subject}${status}${date}${action}</tr>`;
                     $("tbody").append(node);
                 }

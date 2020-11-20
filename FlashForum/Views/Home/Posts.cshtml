@@ -1,0 +1,192 @@
+﻿
+@{
+    ViewBag.Title = "Posts";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#filter").css("visibility", "hidden");
+        var query = location.href;
+        var url = new URL(query);
+
+        var id = url.searchParams.get("id");
+        if (id === null) location.href = '/Home/Index';
+
+        if ($("#navbardrop").length) {
+            $.ajax({
+                url: "/Account/ViewProfile",
+                type: "get",
+                cache: false,
+                success: function (data) {
+                    $("#navbardrop").append("<img src='/Account/Show' alt='My Profile' width='32' height='32'>&nbsp; " + data.username);
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='#'><span class='fa fa-user' aria-hidden='true'></span>&nbsp; My Profile</a>");
+                    $(".dropdown-menu").append(`<a class='dropdown-item' href='/Home/AllTopics/?id=${id}'><span class='fa fa-sticky-note' aria-hidden='true'></span>&nbsp; All Topics</a>`);
+                    $(".dropdown-menu").append("<a class='dropdown-item' href='/Account/Logout'><span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out</a>");
+                },
+                async: true
+            });
+        }
+    });
+
+    function OpenFile() {
+        $('#apply').click();
+    }
+
+    function SendPost() {
+        var buffer = new FormData();
+        var query = location.href;
+        var url = new URL(query);
+        var id = url.searchParams.get("id");
+
+        if (id !== null) {
+            buffer.append('topic', parseInt(id));
+            buffer.append('message', $('#post').val());
+            buffer.append('file', $('#apply').get(0).files[0]);
+
+            $.ajax({
+                url: '/Home/SendPost',
+                type: 'post',
+                contentType: false,
+                cache: false,
+                processData: false,
+                data: buffer,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function (e) {
+                        if (e.lengthComputable) {
+                            var percent = parseInt((e.loaded / e.total) * 100);
+                            $('.progress-bar').width(`${percent}%`);
+                        }
+                    }, false);
+
+                    return xhr;
+                },
+                beforeSend: function () {
+                    $('.container-sm').css('display', 'block');
+                    $('.progress-bar').width("0%");
+                },
+                success: function (data) {
+                    $('.progress-bar').width('0%');
+                    $('.container-sm').css('display', 'none');
+                }
+            });
+
+            setTimeout(function () {
+                location.reload(true);
+            }, 1000);
+        }
+    }
+</script>
+<div class="space">
+</div>
+@using FlashForum.Models;
+@{
+    if (Request.QueryString["id"] != null)
+    {
+        var db = new ForumEntity();
+        int id = int.Parse(Request.QueryString["id"]);
+        var posts = db.Posts.Where(node => node.post_topic == id).ToList();
+        var files = new List<PostFile>();
+        var users = new List<User>();
+
+        posts.ForEach((post) =>
+        {
+            var user = db.Users.Where(node => node.Id == post.post_by).FirstOrDefault();
+            var content = db.PostFiles.Where(file => file.ref_id == post.post_id).FirstOrDefault();
+            files.Add(content);
+            users.Add(user);
+        });
+
+        for (int i = 1; i <= posts.Count; i++)
+        {
+            var user = users[i - 1];
+            PostFile file = null;
+
+            if (files.Count != 0)
+            {
+                file = files[i - 1];
+            }
+
+            if (i % 2 != 0)
+            {
+                <div class="container rounded" style="width: 60%; border: 1px solid lightgray;">
+                    <br><img src="/Home/ViewProfile/?id=@posts[i - 1].post_by" width="32" height="32" class="rounded-circle float-sm-left" alt="@user.user_name" />
+                    <strong>&nbsp; @user.user_name</strong> says:
+                    <span class="float-sm-right">@posts[i - 1].post_date.ToString("MM/dd/yyyy HH:mm:ss")</span>
+                    <hr>
+                    <p>@posts[i - 1].post_content.Replace("\n", "<br>")</p>
+                    <div class="row justify-content-between">
+                        <div class="col-4">
+                            @if (file != null)
+                            {
+                                <a class="page-link" href="/Home/DownloadFile/?id=@file.Id">
+                                    <span class="fa fa-file text-primary">&nbsp; @file.file_name</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-success text-sm-left">Vote Reply</span>
+                            }
+                        </div>
+                        <div class="col-4 float-sm-right">
+                            <i class="fa fa-thumbs-up text-info"></i>
+                            <i class="fa fa-thumbs-down text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="container darker rounded" style="width: 60%; border: 1px solid lightgray;">
+                    <br><img src="/Home/ViewProfile/?id=@posts[i - 1].post_by" width="32" height="32" class="rounded-circle float-sm-left" alt="@user.user_name" />
+                    <strong>&nbsp; @user.user_name</strong> says:
+                    <span class="float-sm-right">@posts[i - 1].post_date.ToString("MM/dd/yyyy HH:mm:ss")</span>
+                    <hr>
+                    <p>@posts[i - 1].post_content.Replace("\n", "<br>")</p>
+                    <div class="row justify-content-between">
+                        <div class="col-4">
+                            @if (file != null)
+                            {
+                                <a class="page-link" href="/Home/DownloadFile/?id=@file.Id">
+                                    <span class="fa fa-file text-primary">&nbsp; @file.file_name</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-success text-sm-left">Vote Reply</span>
+                            }
+                        </div>
+                        <div class="col-4 float-sm-right">
+                            <i class="fa fa-thumbs-up text-info"></i>
+                            <i class="fa fa-thumbs-down text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+            <br>
+        }
+        <br>
+        <h3 class="text-info" style="padding-left: 20%;">Reply</h3>
+        <form class="form-inline" method="post" enctype="multipart/form-data">
+            <div class="form-group mb-2" style="padding-left: 20%;">
+                <textarea id="post" class="rounded" rows="3" cols="50" placeholder="Post Message..."></textarea>
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <a class="text-info" onclick="OpenFile()">
+                    <label for="apply">
+                        <input type="file" name="" id="apply" />
+                        <i class="fa fa-link"></i>
+                    </label>
+                </a>&nbsp;
+                <a class="text-primary" onclick="SendPost()">
+                    <span class="fa fa-send-o"></span>
+                </a>
+            </div>
+        </form>
+        <div class="container-sm" style="padding-left: 20%; display: none;">
+            <div class="progress" style="width: 69%; height: 5px;">
+                <div class="progress-bar" style="width:0%; height:5px"></div>
+            </div>
+        </div>
+    }
+}
+

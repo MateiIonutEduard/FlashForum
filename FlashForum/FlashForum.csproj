@@ -353,6 +353,7 @@
     <Content Include="Views\Home\AddCategory.cshtml" />
     <Content Include="Views\Home\AllTopics.cshtml" />
     <Content Include="Views\Home\AddTopic.cshtml" />
+    <Content Include="Views\Home\Posts.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
