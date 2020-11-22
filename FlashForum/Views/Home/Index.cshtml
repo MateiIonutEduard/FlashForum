@@ -1,5 +1,24 @@
-﻿@{
+﻿@using FlashForum.Models
+
+@{
     ViewBag.Title = "Home Page";
+    var host = new CategoryService();
+
+    var list = new List<CategoryModel>();
+    var param = Request.QueryString["filter"];
+    int filter = 1;
+
+    var users = new UserService();
+    var email = (Request.Cookies["user"] != null) ? Request.Cookies["user"].Value : "";
+    bool action = users.HasPrivilegies(email);
+
+    if (!string.IsNullOrEmpty(param) && int.TryParse(param, out filter)) {
+        list = host.AllCategories(filter);
+    }
+    else
+    {
+        list = host.AllCategories(filter);
+    }
 }
 <div class="space">
 </div>
@@ -15,83 +34,23 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#filter").append(`<option value="1">All Categories</option>`);
-        $("#filter").append(`<option value="2">Best activity...</option>`);
-        $("#filter").append(`<option value="3">Last created</option>`);
+        $("#filter").append(`<option value="/Home/Index/?filter=1">All Categories</option>`);
+        $("#filter").append(`<option value="/Home/Index/?filter=2">Best activity...</option>`);
+        $("#filter").append(`<option value="/Home/Index/?filter=3">Last created</option>`);
 
-        if ($("#navbardrop").length) {
-            $.ajax({
-                url: "/Account/ViewProfile",
-                type: "get",
-                cache: false,
-                success: function (data) {
-                    $("#navbardrop").append("<img src='/Account/Show' alt='My Profile' width='32' height='32'>&nbsp; " + data.username);
-                    $(".dropdown-menu").append("<a class='dropdown-item' href='#'><span class='fa fa-user' aria-hidden='true'></span>&nbsp; My Profile</a>");
+        var query = location.href;
+        var url = new URL(query);
+        var id = url.searchParams.get("filter");
 
-                    if (data.admin)
-                        $(".dropdown-menu").append("<a class='dropdown-item' href='/Home/AddCategory'><span class='fa fa-plus' aria-hidden='true'></span>&nbsp; New Category</a>");
-
-                    $(".dropdown-menu").append("<a class='dropdown-item' href='/Account/Logout'><span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out</a>");
-                },
-                async: true
-            });
-        }
-
-        var filter = $("#filter").val();
-        $("tbody").empty();
-
-        $.ajax({
-            url: '/Home/Categories/',
-            type: 'get',
-            cache: false,
-            data: {
-                'filter': parseInt(filter)
-            },
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var id = `<th scope="row">${i + 1}</th>`;
-                    var name = `<td>${data[i].name}</td>`;
-                    var content = `<td>${data[i].content}</td>`;
-                    var date = `<td>${data[i].date}</td>`;
-
-                    var view = `<a href='/Home/AllTopics/?id=${data[i].id}' title='View Topics' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>`;
-                    var doit = `<a onclick='RemoveAll(${data[i].id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
-
-                    if (data[i].action === false) doit = ``;
-                    var action = `<td>${view}&nbsp;${doit}</td>`;
-                    var node = `<tr>${id}${name}${content}${date}${action}</tr>`;
-                    $("tbody").append(node);
-                }
-            },
-            async: true
-        });
+        if (id === null || id === 1)
+            $('#filter').val('/Home/Index/?filter=1');
+        else
+            $('#filter').val(`/Home/Index/?filter=${id}`);
     });
 
     $(document).on("change", "#filter", function () {
         var filter = $("#filter").val();
-        $("tbody").empty();
-
-        $.get(
-            '/Home/Categories/',
-            {
-                'filter': parseInt(filter)
-            },
-            function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var id = `<th scope="row">${i + 1}</th>`;
-                    var name = `<td>${data[i].name}</td>`;
-                    var content = `<td>${data[i].content}</td>`;
-                    var date = `<td>${data[i].date}</td>`;
-
-                    var view = `<a href='/Home/AllTopics/?id=${data[i].id}' title='View Topics' data-toggle='tooltip'><span class='text-primary fa fa-eye'></span></a>`;
-                    var doit = `<a onclick='RemoveAll(${data[i].id})' title='Remove' data-toggle='tooltip'><span class='text-danger fa fa-trash'></span></a>`;
-
-                    var action = `<td>${view}&nbsp;${doit}</td>`;
-                    var node = `<tr>${id}${name}${content}${date}${action}</tr>`;
-                    $("tbody").append(node);
-                }
-            }
-        );
+        location.href = filter;
     });
 
     function RemoveAll(id) {
@@ -125,20 +84,41 @@
     }
 </script>
 <div class="container-fluid">
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-                <th scope="col">Published</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!--
-                There JQuery will dynamic load web content...
-            -->
-        </tbody>
-    </table><br>
+    @if (list.Count > 0)
+    {
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Published</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 1; i <= list.Count; i++)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        <td>@list[i - 1].name</td>
+                        <td>@list[i - 1].content </td>
+                        <td>@list[i - 1].date</td>
+                        <td>
+                            <a href="/Home/AllTopics/?id=@list[i - 1].id" title="View Topics" data-toggle="tooltip">
+                                <span class="text-primary fa fa-eye"></span>
+                            </a>
+
+                            @if (action)
+                            {
+                                <a onclick="RemoveAll(@list[i - 1].id)" title="Remove" data-toggle="tooltip">
+                                    <span class="text-danger fa fa-trash"></span>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table><br>
+    }
 </div>

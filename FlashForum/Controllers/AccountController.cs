@@ -11,6 +11,7 @@ using System.Text;
 using System.Net;
 using System.Web.Http.Results;
 using System.Data.Entity;
+using FlashForum.Models;
 
 namespace FlashForum.Controllers
 {
@@ -30,11 +31,12 @@ namespace FlashForum.Controllers
             if (user != null)
             {
                 var profile = await db.Profiles.Where(p => p.user_id == user.Id).FirstOrDefaultAsync();
-                return File(profile.image_content, profile.image_type);
+                if(profile != null) return File(profile.image_content, profile.image_type);
             }
 
-            byte[] data = System.IO.File.ReadAllBytes(@"/Images/sys.png");
-            return File(data, "image/png");
+            var filename = Request.MapPath("~/Images/guest.jpg");
+            byte[] data = System.IO.File.ReadAllBytes(filename);
+            return File(data, "image/jpg");
         }
 
         public async Task<ActionResult> ViewProfile()
@@ -54,19 +56,14 @@ namespace FlashForum.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(string email, string password)
         {
-            var hash = SHA256.Create();
-            var db = new ForumEntity();
-
+            var host = new UserService();
+            bool ok = await host.Login(email, password);
             var table = new Dictionary<string, dynamic>();
-            byte[] hashKey = hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-            string key = Convert.ToBase64String(hashKey);
 
-            var user = await db.Users.Where(u => u.user_email == email && u.user_pass == key).FirstOrDefaultAsync();
-
-            if (user != null)
+            if (ok)
             {
                 var cookie = new HttpCookie("user", email);
-                cookie.Expires.AddDays(1);
+                cookie.Expires = DateTime.Now.AddDays(1);
                 HttpContext.Response.SetCookie(cookie);
                 table.Add("url", "/Home/Index");
 
@@ -88,45 +85,14 @@ namespace FlashForum.Controllers
         [HttpPost]
         public async Task<ActionResult> Signup(string username, string password, string email, bool level, HttpPostedFileBase file)
         {
-            var hash = SHA256.Create();
-            var db = new ForumEntity();
-
-            byte[] hashKey = hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-            string key = Convert.ToBase64String(hashKey);
-
-            User node = new User
-            {
-                user_name = username,
-                user_pass = key,
-                user_email = email,
-                user_date = DateTime.Now,
-                user_level = level
-            };
-
-            db.Users.Add(node);
-            await db.SaveChangesAsync();
+            var host = new UserService();
             var table = new Dictionary<string, dynamic>();
-            var RefUser = db.Users.Where(item => item.user_email == node.user_email && item.user_pass == key).FirstOrDefault();
+            bool ok = await host.Signup(username, password, email, level, file);
 
-            if(RefUser != null)
+            if(!ok)
             {
-                int userId = RefUser.Id;
-                var ms = new MemoryStream();
-                await file.InputStream.CopyToAsync(ms);
-
-                var profile = new Profile
-                {
-                    image_name = Path.GetFileName(file.FileName),
-                    image_type = file.ContentType,
-                    image_content = ms.ToArray(),
-                    user_id = RefUser.Id
-                };
-
-                db.Profiles.Add(profile);
-                await db.SaveChangesAsync();
-
                 var cookie = new HttpCookie("user", email);
-                cookie.Expires.AddDays(1);
+                cookie.Expires = DateTime.Now.AddDays(1);
 
                 HttpContext.Response.SetCookie(cookie);
                 table.Add("action", "Register new user");

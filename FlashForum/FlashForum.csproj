@@ -167,7 +167,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CategoryModel.cs" />
+    <Compile Include="Models\CategoryService.cs" />
     <Compile Include="Models\TopicModel.cs" />
+    <Compile Include="Models\TopicService.cs" />
+    <Compile Include="Models\UserService.cs" />
     <Compile Include="Post.cs">
       <DependentUpon>ForumModel.tt</DependentUpon>
     </Compile>
@@ -211,7 +214,7 @@
     </Content>
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Images\sys.png" />
+    <Content Include="Images\guest.jpg" />
     <Content Include="Images\wolf.jpg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -336,8 +339,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\umd\popper.min.js.map" />
     <Content Include="Scripts\umd\popper.js.map" />

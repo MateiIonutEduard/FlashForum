@@ -12,6 +12,5 @@ namespace FlashForum.Models
         public string date { get; set; }
         public int status { get; set; }
         public int userid { get; set; }
-        public bool action { get; set; }
     }
 }

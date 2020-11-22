@@ -10,21 +10,6 @@
 
         var id = url.searchParams.get("id");
         if (id === null) location.href = '/Home/Index';
-
-        if ($("#navbardrop").length) {
-            $.ajax({
-                url: "/Account/ViewProfile",
-                type: "get",
-                cache: false,
-                success: function (data) {
-                    $("#navbardrop").append("<img src='/Account/Show' alt='My Profile' width='32' height='32'>&nbsp; " + data.username);
-                    $(".dropdown-menu").append("<a class='dropdown-item' href='#'><span class='fa fa-user' aria-hidden='true'></span>&nbsp; My Profile</a>");
-                    $(".dropdown-menu").append(`<a class='dropdown-item' href='/Home/AllTopics/?id=${id}'><span class='fa fa-sticky-note' aria-hidden='true'></span>&nbsp; All Topics</a>`);
-                    $(".dropdown-menu").append("<a class='dropdown-item' href='/Account/Logout'><span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out</a>");
-                },
-                async: true
-            });
-        }
     });
 
     function OpenFile() {

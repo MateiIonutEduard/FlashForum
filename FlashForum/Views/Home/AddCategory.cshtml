@@ -6,24 +6,6 @@
         $('[data-toggle="tooltip"]').tooltip();
         $("#data-filter").css("visibility", "hidden");
 
-        if ($("#navbardrop").length) {
-            $.ajax({
-                url: "/Account/ViewProfile",
-                type: "get",
-                cache: false,
-                success: function (data) {
-                    $("#navbardrop").append("<img src='/Account/Show' alt='My Profile' width='32' height='32'>&nbsp; " + data.username);
-                    $(".dropdown-menu").append("<a class='dropdown-item' href='#'><span class='fa fa-user' aria-hidden='true'></span>&nbsp; My Profile</a>");
-
-                    if (data.admin)
-                        $(".dropdown-menu").append("<a class='dropdown-item' href='/Home/AddCategory'><span class='fa fa-plus' aria-hidden='true'></span>&nbsp; New Category</a>");
-
-                    $(".dropdown-menu").append("<a class='dropdown-item' href='/Account/Logout'><span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out</a>");
-                },
-                async: true
-            });
-        }
-
         $("form").submit(function (e) {
             e.preventDefault();
 

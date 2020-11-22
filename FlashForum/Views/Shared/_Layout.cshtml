@@ -75,12 +75,12 @@
             font-weight: bold;
         }
 
-        .close:hover,
+            .close:hover,
             .close:focus {
                 color: #000;
                 text-decoration: none;
                 cursor: pointer;
-        }
+            }
 
         #view {
             opacity: 0;
@@ -97,9 +97,9 @@
             width: 600px;
         }
 
-        #post:hover {
-            border-color: #228B22;
-        }
+            #post:hover {
+                border-color: #228B22;
+            }
 
         #apply {
             border: 0;
@@ -116,6 +116,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
+@using FlashForum.Models
+@{ 
+    var model = new UserService();
+    var email = (Request.Cookies["user"] != null) ? Request.Cookies["user"].Value : "";
+    var item = model.GetUser(email);
+    bool success = (item != null);
+}
 <body>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
         <ul class="navbar-nav">
@@ -133,14 +140,51 @@
                 </select>
 
             </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-            @if (Request.Cookies["user"] != null)
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            @if (success)
             {
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                        <img src="/Account/Show" alt="My Profile" width="32" height="32">&nbsp;@item.user_name
                     </a>
                     <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">
+                            <span class="fa fa-user" aria-hidden="true"></span>&nbsp; My Profile
+                        </a>
+                        @if (ViewBag.Title == "Home Page" && item.user_level)
+                        {
+                            <a class="dropdown-item" href="/Home/AddCategory">
+                                <span class='fa fa-plus' aria-hidden='true'></span>&nbsp; New Category
+                            </a>
+                        }
+                        else if (ViewBag.Title == "Add Category")
+                        {
+                            <a class="dropdown-item" href="/Home/Index">
+                                <span class='fa fa-paw' aria-hidden='true'></span>&nbsp; All Categories...
+                            </a>
+                        }
+                        else if (ViewBag.Title == "All Topics")
+                        {
+                            <a class="dropdown-item" href="/Home/AddTopic/?id=@Request.QueryString["id"]">
+                                <span class="fa fa-plus" aria-hidden="true"></span>&nbsp; Create Topic...
+                            </a>
+                        }
+                        else if (ViewBag.Title == "New Topic")
+                        {
+                            <a class="dropdown-item" href="/Home/AllTopics/?id=@Request.QueryString["id"]">
+                                <span class="fa fa-list" aria-hidden="true"></span>&nbsp; All Topics
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="dropdown-item" href="/Home/AllTopics/?id=@Request.QueryString["id"]">
+                                <span class="fa fa-list" aria-hidden="true"></span>&nbsp; All Topics
+                            </a>
+                        }
+                        <a class='dropdown-item' href='/Account/Logout'>
+                            <span class='fa fa-sign-out' aria-hidden='true'></span>&nbsp; Sign out
+                        </a>
                     </div>
                 </li>
             }
