@@ -168,6 +168,7 @@
     </Compile>
     <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\CategoryService.cs" />
+    <Compile Include="Models\PostUtils.cs" />
     <Compile Include="Models\TopicModel.cs" />
     <Compile Include="Models\TopicService.cs" />
     <Compile Include="Models\UserService.cs" />
