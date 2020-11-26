@@ -108,6 +108,11 @@ namespace FlashForum.Controllers
             }
         }
 
+        public ActionResult Recover()
+        {
+            return View();
+        }
+
         public ActionResult Logout()
         {
             HttpContext.Request.Cookies.Remove("user");

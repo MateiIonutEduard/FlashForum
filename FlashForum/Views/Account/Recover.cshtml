@@ -1,0 +1,180 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Recover Account</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/signin.css" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: -ms-flexbox;
+            display: -webkit-box;
+            display: flex;
+            -ms-flex-align: center;
+            -ms-flex-pack: center;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+        }
+
+        form {
+            padding-top: 10px;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+
+        .card-title {
+            font-weight: 300;
+        }
+
+        .btn {
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .login-form {
+            width: 320px;
+            margin: 20px;
+        }
+
+        .sign-up {
+            text-align: center;
+            padding: 20px 0 0;
+        }
+
+        span {
+            font-size: 14px;
+        }
+    </style>
+    <script src="~/Scripts/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+</head>
+<body>
+    @using System.Text
+    @using FlashForum.Models
+    @using System.Security.Cryptography
+    <div class="card login-form">
+        <div class="card-body">
+            <h3 class="card-title text-center">Reset password</h3>
+            @{
+                bool sent = false;
+                bool reset = false;
+                string result = string.Empty;
+                string code = (Request["send"] != null) ? "Send" : "Reset";
+                string address = string.Empty;
+
+                if (!sent)
+                {
+                    if (Request["send"] != null)
+                    {
+                        var host = new UserService();
+                        var user = host.GetUser(Request["email"]);
+                        address = Request["email"];
+
+                        if (user != null)
+                        {
+                            byte[] buffer = new byte[8];
+
+                            using (var rand = RandomNumberGenerator.Create())
+                            {
+                                rand.GetBytes(buffer);
+                                var sb = new StringBuilder();
+
+                                for (int i = 0; i < buffer.Length; i += 2)
+                                {
+                                    sb.AppendFormat("{0:X2}{0:X2}-", buffer[i], buffer[i + 1]);
+                                }
+
+                                string val = sb.ToString();
+                                result = val.Substring(0, val.Length - 1);
+                                UserService.SendEmail(Request["email"], "Flash Forum Password Reset", $"Hi {user.user_name}! This is the security code: {val}.");
+                                sent = !sent;
+                            }
+
+                        }
+                        else
+                        {
+                            Response.Redirect("~/Account/Signup");
+                        }
+                    }
+                    else
+                    {
+                        var data = Request["code"];
+
+                        if (result == data)
+                        {
+                            reset = true;
+                        }
+                    }
+                }
+            }
+        <div class="card-text">
+            @if (reset)
+            {
+                if(Request["next"] != null && Request["pass"] == Request["conf"])
+                {
+                    var hash = SHA256.Create();
+                    string password = Request["pass"];
+
+                    byte[] hashKey = hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+                    string key = Convert.ToBase64String(hashKey);
+
+                    var db = new ForumEntity();
+                    var user = db.Users.Where(u => u.user_email == address)
+                                .FirstOrDefault();
+
+                    user.user_pass = key;
+                    db.SaveChanges();
+                    Response.Redirect("~/Home/Index");
+                }
+                <form method="post">
+
+                    <div class="md-form md-outline">
+                        <input type="password" name="pass" class="form-control" required autofocus>
+                        <label data-error="wrong" data-success="right" for="newPass" class="">New password</label>
+                    </div>
+
+                    <div class="md-form md-outline">
+                        <input type="password" name="conf" class="form-control" required>
+                        <label data-error="wrong" data-success="right" for="newPassConfirm" class="">Confirm password</label>
+                    </div>
+
+                    <button type="submit" name="next" class="btn btn-primary mb-4 waves-effect waves-light">Change password</button>
+
+                </form>
+            }
+            else
+            {
+                <form method="post">
+                    <div class="form-group">
+                        @if (Request["send"] != null)
+                        {
+                            <label for="text">Enter your activation code and change password.</label>
+                            <input type="text" name="code" class="form-control" placeholder="Enter identity code..." required autofocu>
+                        }
+                        else
+                        {
+                            <label for="email">Enter your email address and we will send you a link to reset your password.</label>
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email address" required autofocus>
+                        }
+                    </div>
+                    <button type="submit" name="send" class="btn btn-primary btn-block">@code</button>
+                </form>
+            }
+        </div>
+        </div>
+    </div>
+</body>
+</html>

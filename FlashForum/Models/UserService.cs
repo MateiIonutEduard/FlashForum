@@ -7,6 +7,8 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Data.Entity;
 using System.IO;
+using System.Net.Mail;
+using System.Configuration;
 
 namespace FlashForum.Models
 {
@@ -84,6 +86,17 @@ namespace FlashForum.Models
                         .FirstOrDefault();
 
             return user;
+        }
+
+        public static void SendEmail(string to, string subject, string body)
+        {
+            var admin = ConfigurationManager.AppSettings["ADMIN"];
+            var ServerHost = ConfigurationManager.AppSettings["SERVER"];
+            var message = new MailMessage(admin, to, subject, body);
+
+            message.IsBodyHtml = false;
+            var server = new SmtpClient(ServerHost);
+            server.Send(message);
         }
 
         public bool HasPrivilegies(string cookie)

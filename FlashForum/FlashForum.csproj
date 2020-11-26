@@ -357,6 +357,7 @@
     <Content Include="Views\Home\AllTopics.cshtml" />
     <Content Include="Views\Home\AddTopic.cshtml" />
     <Content Include="Views\Home\Posts.cshtml" />
+    <Content Include="Views\Account\Recover.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
