@@ -65,4 +65,4 @@
 FlashForum/Scripts/* linguist-vendored
 jquery.js -linguist-vendored
 
-FlashForum/Views/* linguist-vendored
+FlashForum/Views/Account/* linguist-vendored
