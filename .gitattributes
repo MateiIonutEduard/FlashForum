@@ -61,3 +61,6 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+FlashForum/Scripts/* linguist-vendored
+jquery.js -linguist-vendored
