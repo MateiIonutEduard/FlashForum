@@ -31,33 +31,7 @@
     <script src="~/Scripts/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $(".form-signin").submit(function (e) {
-                e.preventDefault();
-                var form = {
-                    "email": $("#email").val(),
-                    "password": $("#password").val()
-                };
-
-                $.ajax({
-                    url: '/Account/Login',
-                    type: 'post',
-                    data: form,
-                    dataType: 'json',
-                    cache: false,
-                    success: function (data) {
-                        if (data.success)
-                            location.href = "/Home/Index";
-                        else {
-                            $(".text-danger").css("visibility", "visible");
-                        }
-                    },
-                    async: true
-                });
-            });
-        });
-    </script>
+    <script type="text/javascript" src="~/Scripts/js/login.js"></script>
 </head>
 <body class="text-center">
     <form class="form-signin" method="post">
