@@ -69,8 +69,8 @@
         <div class="card-body">
             <h3 class="card-title text-center">Reset password</h3>
             @{
-                bool sent = false;
-                bool reset = false;
+                bool sent = (Request.QueryString["action"] != null);
+                bool reset = (Request.QueryString["status"] != null);
                 string result = string.Empty;
                 string code = (Request["send"] != null) ? "Send" : "Reset";
                 string address = string.Empty;
@@ -99,8 +99,8 @@
 
                                 string val = sb.ToString();
                                 result = val.Substring(0, val.Length - 1);
-                                UserService.SendEmail(Request["email"], "Flash Forum Password Reset", $"Hi {user.user_name}! This is the security code: {val}.");
-                                sent = !sent;
+                                UserService.SendEmail(Request["email"], "Flash Forum Password Reset", $"Hi {user.user_name}! This is the security code: {result}.");
+                                Response.Redirect($"~/Account/Recover/?id={user.Id}&action={Convert.ToBase64String(Encoding.UTF8.GetBytes(result))}");
                             }
 
                         }
@@ -109,14 +109,16 @@
                             Response.Redirect("~/Account/Signup");
                         }
                     }
-                    else
-                    {
-                        var data = Request["code"];
+                } else
+                {
+                    var temp = Convert.FromBase64String(Request.QueryString["action"]);
+                    var data = Encoding.UTF8.GetString(temp);
 
-                        if (result == data)
-                        {
-                            reset = true;
-                        }
+                    if (data == Request["code"])
+                    {
+                        reset = true;
+                        var id = Request.QueryString["id"];
+                        Response.Redirect($"~/Account/Recover/?id={id}&action={Convert.ToBase64String(Encoding.UTF8.GetBytes(data))}&status=checked");
                     }
                 }
             }
@@ -128,15 +130,21 @@
                     var hash = SHA256.Create();
                     string password = Request["pass"];
 
+                    int id = int.Parse(Request.QueryString["id"]);
                     byte[] hashKey = hash.ComputeHash(Encoding.UTF8.GetBytes(password));
                     string key = Convert.ToBase64String(hashKey);
 
                     var db = new ForumEntity();
-                    var user = db.Users.Where(u => u.user_email == address)
+                    var user = db.Users.Where(u => u.Id == id)
                                 .FirstOrDefault();
 
                     user.user_pass = key;
                     db.SaveChanges();
+
+                    var cookie = new HttpCookie("user", user.user_email);
+                    cookie.Expires = DateTime.Now.AddDays(1);
+
+                    Response.SetCookie(cookie);
                     Response.Redirect("~/Home/Index");
                 }
                 <form method="post">
@@ -159,7 +167,7 @@
             {
                 <form method="post">
                     <div class="form-group">
-                        @if (Request["send"] != null)
+                        @if (Request["send"] != null || sent)
                         {
                             <label for="text">Enter your activation code and change password.</label>
                             <input type="text" name="code" class="form-control" placeholder="Enter identity code..." required autofocu>
