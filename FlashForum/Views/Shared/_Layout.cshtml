@@ -122,6 +122,17 @@
     var email = (Request.Cookies["user"] != null) ? Request.Cookies["user"].Value : "";
     var item = model.GetUser(email);
     bool success = (item != null);
+    var url = "/Home/Index";
+
+    if(ViewBag.Title == "Posts")
+    {
+        int id = int.Parse(Request.QueryString["id"]);
+        var db = new ForumEntity();
+        var t = db.Topics.Where(m => m.topic_id == id)
+                    .FirstOrDefault();
+
+        url = (t != null) ? $"/Home/AllTopics/?id={t.topic_cat}" : "/Home/Index";
+    }
 }
 <body>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -178,7 +189,7 @@
                         }
                         else
                         {
-                            <a class="dropdown-item" href="/Home/AllTopics/?id=@Request.QueryString["id"]">
+                            <a class="dropdown-item" href="@url">
                                 <span class="fa fa-list" aria-hidden="true"></span>&nbsp; All Topics
                             </a>
                         }
