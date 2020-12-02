@@ -178,6 +178,26 @@ namespace FlashForum.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<ActionResult> CloseTopic(int? id)
+        {
+            if(id != null)
+            {
+                var db = new ForumEntity();
+                var topic = await db.Topics.Where(t => t.topic_id == id.Value)
+                        .FirstOrDefaultAsync();
+
+                topic.status = 3;
+                await db.SaveChangesAsync();
+                var result = new HttpStatusCodeResult(HttpStatusCode.OK);
+                return result;
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Something is wrong!");
+            }
+        }
+
         [HttpDelete]
         public async Task<ActionResult> RemoveTopic(int? id)
         {

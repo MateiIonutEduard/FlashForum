@@ -43,6 +43,20 @@
 
 </div>
 <script type="text/javascript">
+    function CloseTopic(id) {
+        $.ajax({
+            url: '/Home/CloseTopic',
+            type: 'put',
+            data: {
+                'id': parseInt(id)
+            },
+            cache: false,
+            success: function (data) {
+                setTimeout(location.reload(true), 1000);
+            },
+            async: true
+        });
+    }
     function RemoveTopic(id) {
         // show popup first...
         var modal = $("#myModal");
@@ -135,10 +149,13 @@
                     <td>
                         <a href="/Home/Posts/?id=@list[i - 1].id" title="View Posts" data-toggle="tooltip">
                             <span class="text-primary fa fa-eye"></span>
-                        </a>&nbsp;
+                        </a>
 
                         @if (admin || list[i - 1].userid == user.Id)
                         {
+                            <a onclick="CloseTopic(@list[i - 1].id)" title="Close Topic" data-toggle="tooltip">
+                                <span class="text-info fa fa-times-circle"></span>
+                            </a>
                             <a onclick="RemoveTopic(@list[i - 1].id)" title="Remove" data-toggle="tooltip">
                                 <span class="text-danger fa fa-trash"></span>
                             </a>
