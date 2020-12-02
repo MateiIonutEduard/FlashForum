@@ -9,6 +9,7 @@ using System.Data.Entity;
 using System.IO;
 using System.Net.Mail;
 using System.Configuration;
+using System.Net;
 
 namespace FlashForum.Models
 {
@@ -90,13 +91,23 @@ namespace FlashForum.Models
 
         public static void SendEmail(string to, string subject, string body)
         {
-            var admin = ConfigurationManager.AppSettings["ADMIN"];
-            var ServerHost = ConfigurationManager.AppSettings["SERVER"];
-            var message = new MailMessage(admin, to, subject, body);
+            string server = ConfigurationManager.AppSettings["host"];
+            int port = int.Parse(ConfigurationManager.AppSettings["port"]);
 
-            message.IsBodyHtml = false;
-            var server = new SmtpClient(ServerHost);
-            server.Send(message);
+            string client = ConfigurationManager.AppSettings["client"];
+            string secret = ConfigurationManager.AppSettings["secret"];
+
+            SmtpClient host = new SmtpClient(server, port);
+            host.EnableSsl = true;
+            host.UseDefaultCredentials = false;
+            host.Credentials = new NetworkCredential(client, secret);
+
+            MailMessage mail = new MailMessage();
+
+            mail.To.Add(to);
+            mail.From = new MailAddress(client);
+            mail.Body = body;
+            host.Send(mail);
         }
 
         public bool HasPrivilegies(string cookie)
