@@ -18,6 +18,7 @@ namespace FlashForum
         public Post()
         {
             this.PostFiles = new HashSet<PostFile>();
+            this.Likes = new HashSet<Like>();
         }
     
         public int post_id { get; set; }
@@ -30,5 +31,7 @@ namespace FlashForum
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PostFile> PostFiles { get; set; }
         public virtual Topic Topic { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Like> Likes { get; set; }
     }
 }

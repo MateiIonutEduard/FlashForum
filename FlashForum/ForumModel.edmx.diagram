@@ -17,6 +17,9 @@
         <AssociationConnector Association="ForumModel.FK_Post_Topic" ManuallyRouted="false" />
         <AssociationConnector Association="ForumModel.FK_Profile_User_ID" ManuallyRouted="false" />
         <AssociationConnector Association="ForumModel.FK_Topic_By" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ForumModel.Like" Width="1.5" PointX="8.25" PointY="4.625" />
+        <AssociationConnector Association="ForumModel.FK_POST" />
+        <AssociationConnector Association="ForumModel.FK_USER" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

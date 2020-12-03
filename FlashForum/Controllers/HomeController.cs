@@ -286,6 +286,57 @@ namespace FlashForum.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Something is wrong!");
         }
 
+        [HttpPut]
+        public async Task<ActionResult> SendVote(int id, int status)
+        {
+            var db = new ForumEntity();
+            var cookie = Request.Cookies["user"];
+            var email = (cookie != null) ? cookie.Value : "";
+
+            var user = await db.Users.Where(u => u.user_email == email)
+                .FirstOrDefaultAsync();
+
+            if(user != null)
+            {
+                bool action = (status != 0);
+                var test = await db.Likes.Where(v => v.uid == user.Id && v.pid == id)
+                    .FirstOrDefaultAsync();
+
+                var post = await db.Posts.Where(m => m.post_id == id)
+                    .FirstOrDefaultAsync();
+
+                var th = await db.Topics.Where(t => t.topic_id == post.post_topic)
+                    .FirstOrDefaultAsync();
+
+                if (th.status != 3)
+                {
+                    if (test != null)
+                    {
+                        test.like = action;
+                        await db.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var like = new Like
+                        {
+                            uid = user.Id,
+                            like = action,
+                            pid = id
+                        };
+
+                        db.Likes.Add(like);
+                        await db.SaveChangesAsync();
+                    }
+
+                    return new HttpStatusCodeResult(HttpStatusCode.Created);
+                }
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
         [HttpPost]
         public async Task<ActionResult> SendPost(int topic, string message, HttpPostedFileBase file)
         {

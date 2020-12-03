@@ -20,6 +20,7 @@ namespace FlashForum
             this.Posts = new HashSet<Post>();
             this.Profiles = new HashSet<Profile>();
             this.Topics = new HashSet<Topic>();
+            this.Likes = new HashSet<Like>();
         }
     
         public int Id { get; set; }
@@ -35,5 +36,7 @@ namespace FlashForum
         public virtual ICollection<Profile> Profiles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Topic> Topics { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Like> Likes { get; set; }
     }
 }

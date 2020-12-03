@@ -42,6 +42,9 @@
             var user = users[i - 1];
             PostFile file = null;
 
+            var vote = PostUtils.GetVotes(posts[i - 1].post_id);
+            var like = PostUtils.UserLike(uid, posts[i - 1].post_id);
+
             if (files.Count != 0)
             {
                 file = files[i - 1];
@@ -78,9 +81,12 @@
                             }
                             else
                             {
-                                <a class="text-success" data-toggle="tooltip" title="Reply All">
-                                    <span class="fa fa-reply text-info" onclick="ScrollDown()"></span>
-                                </a>
+                                <a data-toggle="tooltip" title="Like it">
+                                    <span class="text-info fa @like.Item1" onclick="UpdatePost(@posts[i - 1].post_id, 1)"></span>
+                                </a> @vote.Item1
+                                <a data-toggle="tooltip" title="Don't like">
+                                    <span class="text-danger fa @like.Item2" onclick="UpdatePost(@posts[i - 1].post_id, 0)"></span>
+                                </a> @vote.Item2
                             }
                         </div>
                     </div>
@@ -117,9 +123,12 @@
                             }
                             else
                             {
-                                <a class="text-success" data-toggle="tooltip" title="Reply All">
-                                <span class="fa fa-reply text-info" onclick="ScrollDown()"></span>
-                                </a>
+                                <a data-toggle="tooltip" title="Like it">
+                                    <span class="text-info fa @like.Item1" onclick="UpdatePost(@posts[i - 1].post_id, 1)"></span>
+                                </a> @vote.Item1
+                                <a data-toggle="tooltip" title="Don't like">
+                                    <span class="text-danger fa @like.Item2" onclick="UpdatePost(@posts[i - 1].post_id, 0)"></span>
+                                </a> @vote.Item2
                             }
                         </div>
                     </div>

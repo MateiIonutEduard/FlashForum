@@ -67,9 +67,21 @@ function SendPost() {
     }
 }
 
-function ScrollDown() {
-    $(document).scrollTop($(document).height());
-    $('#post').focus();
+function UpdatePost(id, status) {
+    $.ajax({
+        url: '/Home/SendVote',
+        type: 'put',
+        cache: false,
+        data: {
+            'id': parseInt(id),
+            'status': parseInt(status)
+        },
+        async: true
+    });
+
+    setTimeout(function () {
+        location.reload(true);
+    }, 500);
 }
 
 function RemovePost(id) {

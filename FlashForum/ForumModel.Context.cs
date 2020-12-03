@@ -22,7 +22,7 @@ namespace FlashForum
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            //throw new UnintentionalCodeFirstException();
+            throw new UnintentionalCodeFirstException();
         }
     
         public virtual DbSet<Category> Categories { get; set; }
@@ -31,5 +31,6 @@ namespace FlashForum
         public virtual DbSet<Profile> Profiles { get; set; }
         public virtual DbSet<Topic> Topics { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Like> Likes { get; set; }
     }
 }

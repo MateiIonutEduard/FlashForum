@@ -68,5 +68,15 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="Likes">
+      <EntityTypeMapping TypeName="ForumModel.Like">
+        <MappingFragment StoreEntitySet="Like">
+          <ScalarProperty Name="pid" ColumnName="pid" />
+          <ScalarProperty Name="like" ColumnName="like" />
+          <ScalarProperty Name="uid" ColumnName="uid" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

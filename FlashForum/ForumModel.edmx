@@ -14,6 +14,15 @@
           <Property Name="cat_description" Type="varchar(max)" Nullable="false" />
           <Property Name="cat_date" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Like">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="uid" Type="int" Nullable="false" />
+          <Property Name="like" Type="bit" Nullable="false" />
+          <Property Name="pid" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Post">
           <Key>
             <PropertyRef Name="post_id" />
@@ -64,8 +73,20 @@
           <Property Name="user_pass" Type="varchar(max)" Nullable="false" />
           <Property Name="user_email" Type="varchar" MaxLength="80" Nullable="false" />
           <Property Name="user_date" Type="datetime" Nullable="false" />
-          <Property Name="user_level" Type="bit" />
+          <Property Name="user_level" Type="bit" Nullable="false" />
         </EntityType>
+        <Association Name="FK_POST">
+          <End Role="Post" Type="Self.Post" Multiplicity="1" />
+          <End Role="Like" Type="Self.Like" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Post">
+              <PropertyRef Name="post_id" />
+            </Principal>
+            <Dependent Role="Like">
+              <PropertyRef Name="pid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Post_By">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="Post" Type="Self.Post" Multiplicity="*" />
@@ -138,13 +159,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_USER">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Like" Type="Self.Like" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Like">
+              <PropertyRef Name="uid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="ForumModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Like" EntityType="Self.Like" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostFile" EntityType="Self.PostFile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Profile" EntityType="Self.Profile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Topic" EntityType="Self.Topic" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_POST" Association="Self.FK_POST">
+            <End Role="Post" EntitySet="Post" />
+            <End Role="Like" EntitySet="Like" />
+          </AssociationSet>
           <AssociationSet Name="FK_Post_By" Association="Self.FK_Post_By">
             <End Role="User" EntitySet="User" />
             <End Role="Post" EntitySet="Post" />
@@ -168,6 +206,10 @@
           <AssociationSet Name="FK_Topic_Cat" Association="Self.FK_Topic_Cat">
             <End Role="Category" EntitySet="Category" />
             <End Role="Topic" EntitySet="Topic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_USER" Association="Self.FK_USER">
+            <End Role="User" EntitySet="User" />
+            <End Role="Like" EntitySet="Like" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -196,6 +238,7 @@
           <NavigationProperty Name="User" Relationship="Self.FK_Post_By" FromRole="Post" ToRole="User" />
           <NavigationProperty Name="PostFiles" Relationship="Self.FK_Post_ID" FromRole="Post" ToRole="PostFile" />
           <NavigationProperty Name="Topic" Relationship="Self.FK_Post_Topic" FromRole="Post" ToRole="Topic" />
+          <NavigationProperty Name="Likes" Relationship="ForumModel.FK_POST" FromRole="Post" ToRole="Like" />
         </EntityType>
         <EntityType Name="PostFile">
           <Key>
@@ -242,10 +285,11 @@
           <Property Name="user_pass" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="user_email" Type="String" MaxLength="80" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="user_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="user_level" Type="Boolean" />
+          <Property Name="user_level" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Posts" Relationship="Self.FK_Post_By" FromRole="User" ToRole="Post" />
           <NavigationProperty Name="Profiles" Relationship="Self.FK_Profile_User_ID" FromRole="User" ToRole="Profile" />
           <NavigationProperty Name="Topics" Relationship="Self.FK_Topic_By" FromRole="User" ToRole="Topic" />
+          <NavigationProperty Name="Likes" Relationship="ForumModel.FK_USER" FromRole="User" ToRole="Like" />
         </EntityType>
         <Association Name="FK_Topic_Cat">
           <End Role="Category" Type="Self.Category" Multiplicity="1" />
@@ -350,7 +394,51 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Topic" EntitySet="Topics" />
           </AssociationSet>
+          <EntitySet Name="Likes" EntityType="ForumModel.Like" />
+          <AssociationSet Name="FK_POST" Association="ForumModel.FK_POST">
+            <End Role="Post" EntitySet="Posts" />
+            <End Role="Like" EntitySet="Likes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_USER" Association="ForumModel.FK_USER">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Like" EntitySet="Likes" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Like">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="uid" Type="Int32" Nullable="false" />
+          <Property Name="like" Type="Boolean" Nullable="false" />
+          <Property Name="pid" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Post" Relationship="ForumModel.FK_POST" FromRole="Like" ToRole="Post" />
+          <NavigationProperty Name="User" Relationship="ForumModel.FK_USER" FromRole="Like" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_POST">
+          <End Type="ForumModel.Post" Role="Post" Multiplicity="1" />
+          <End Type="ForumModel.Like" Role="Like" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Post">
+              <PropertyRef Name="post_id" />
+            </Principal>
+            <Dependent Role="Like">
+              <PropertyRef Name="pid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_USER">
+          <End Type="ForumModel.User" Role="User" Multiplicity="1" />
+          <End Type="ForumModel.Like" Role="Like" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Like">
+              <PropertyRef Name="uid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -421,6 +509,16 @@
                 <ScalarProperty Name="user_email" ColumnName="user_email" />
                 <ScalarProperty Name="user_date" ColumnName="user_date" />
                 <ScalarProperty Name="user_level" ColumnName="user_level" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Likes">
+            <EntityTypeMapping TypeName="ForumModel.Like">
+              <MappingFragment StoreEntitySet="Like">
+                <ScalarProperty Name="pid" ColumnName="pid" />
+                <ScalarProperty Name="like" ColumnName="like" />
+                <ScalarProperty Name="uid" ColumnName="uid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

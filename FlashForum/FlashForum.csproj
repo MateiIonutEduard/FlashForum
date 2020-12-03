@@ -166,6 +166,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Like.cs">
+      <DependentUpon>ForumModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\CategoryService.cs" />
     <Compile Include="Models\PostUtils.cs" />
