@@ -359,6 +359,11 @@ namespace FlashForum.Controllers
                     };
 
                     db.Posts.Add(post);
+                    var th = await db.Topics.Where(t => t.topic_id == topic)
+                        .FirstOrDefaultAsync();
+
+                    var len = await db.Posts.Where(m => m.post_topic == topic).CountAsync();
+                    if (th.status != 3 && len == 1) th.status = 2;
                     await db.SaveChangesAsync();
 
                     var self = await db.Posts.Where(m => m.post_content == message)
@@ -407,6 +412,13 @@ namespace FlashForum.Controllers
                         db.PostFiles.RemoveRange(files);
 
                     db.Posts.Remove(post);
+                    var th = await db.Topics.Where(t => t.topic_id == post.post_topic)
+                        .FirstOrDefaultAsync();
+
+                    var len = await db.Posts.Where(m => m.post_topic == th.topic_id)
+                        .CountAsync() - 1;
+
+                    if (th.status != 3 && len == 1) th.status = 1;
                     await db.SaveChangesAsync();
                 }
 
