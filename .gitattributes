@@ -2,13 +2,13 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
-FlashForum/Scripts/esm/* linguist-detectable=false
-FlashForum/Scripts/src/* linguist-detectable=false
-FlashForum/Scripts/umd/* linguist-detectable=false
-FlashForum/Scripts/*.* linguist-detectable=false
+FlashForum/Scripts/esm/* linguist-vendored
+FlashForum/Scripts/src/* linguist-vendored
+FlashForum/Scripts/umd/* linguist-vendored
+FlashForum/Scripts/*.* linguist-vendored
 jquery.js linguist-detectable=false
 
-FlashForum/Views/Account/Recover.* linguist-detectable=false
+FlashForum/Views/Account/Recover.* linguist-vendored
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
