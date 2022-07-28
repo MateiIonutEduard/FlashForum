@@ -61,11 +61,3 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
-
-FlashForum/Scripts/esm/* linguist-vendored
-FlashForum/Scripts/src/* linguist-vendored
-FlashForum/Scripts/umd/* linguist-vendored
-FlashForum/Scripts/*.* linguist-vendored
-jquery.js -linguist-vendored
-
-FlashForum/Views/Account/Recover.* linguist-vendored
